@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: user-app
+  name: user-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: user-app
+  template:
+    metadata:
+      labels: 
+        app: user-app
+    spec:
+      containers:
+        - image: jampidev21/assessment-user-app
+          name: user-app
+          ports:
+          - containerPort: 8080
+          env:
+          - name: KAFKA_BOOSTRAP_SERVERS
+            value: kafka-service:9092
+          - name: MONGODB_HOST
+            value: mongo-user-service
+          - name: MONGODB_USERNAME
+            valueFrom:
+              secretKeyRef:
+                name: mongodb-user-secret
+                key: username
+          - name: MONGODB_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: mongodb-user-secret
+                key: password
+          resources:
+            limits:
+              cpu: 500m
+              memory: 1Gi
+

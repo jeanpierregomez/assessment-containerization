@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: kafka
+  name: kafka-service
+spec:
+  type: ClusterIP
+  selector:
+    app: kafka-broker
+  ports:
+    - name: kafka-port
+      port: 9092
+      targetPort: 9092
+    - name: kafka-admin-port
+      port: 29092
+      targetPort: 29092

@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: mongo
+  name: mongo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mongo
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        app: mongo
+    spec:
+      containers:
+      - image: mongo
+        name: mongo
+        args: ["--dbpath","/data/db"]
+        env:
+        - name: MONGO_INITDB_ROOT_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: mongodb-user-secret
+              key: username
+        - name: MONGO_INITDB_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mongodb-user-secret
+              key: password
+        volumeMounts:
+        - name: "mongo-user-data-dir"
+          mountPath: "/data/db"
+        resources:
+          limits:
+            memory: 256Mi
+            cpu: "100m"
+      volumes:
+      - name: "mongo-user-data-dir"
+        persistentVolumeClaim:
+          claimName: "pvc-mongodb-user"
